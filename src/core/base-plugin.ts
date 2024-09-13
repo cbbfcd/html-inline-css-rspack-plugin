@@ -1,4 +1,4 @@
-import type { Compilation } from 'webpack';
+import type { Compilation } from '@rspack/core';
 
 import {
   Config,

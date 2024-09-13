@@ -1,37 +1,38 @@
-import type { SyncHook } from 'tapable'
-import type { Compiler } from 'webpack'
-import HTMLWebpackPlugin = require('html-webpack-plugin')
+import { HtmlRspackPlugin, type HtmlRspackPluginOptions, type Compiler } from '@rspack/core'
 
 import { TAP_KEY_PREFIX } from '../types'
 import { BasePlugin } from './base-plugin'
 
-interface BeforeAssetTagGenerationData {
-  outputName: string
-  assets: {
-    publicPath: string
-    css: string[]
-  }
-  plugin: HTMLWebpackPlugin
-}
+export type ExtraPluginHookData = {
+  plugin: {
+      options: HtmlRspackPluginOptions;
+  };
+};
 
-interface BeforeEmitData {
+export interface JsBeforeEmitData {
   html: string
   outputName: string
-  plugin: HTMLWebpackPlugin
 }
 
-interface HTMLWebpackPluginHooks {
-  beforeAssetTagGeneration: SyncHook<BeforeAssetTagGenerationData>
-  beforeEmit: SyncHook<BeforeEmitData>
+export interface JsHtmlPluginAssets {
+  publicPath: string
+  js: Array<string>
+  css: Array<string>
+  favicon?: string
+}
+
+export interface JsBeforeAssetTagGenerationData {
+  assets: JsHtmlPluginAssets
+  outputName: string
 }
 
 type CSSStyle = string
 
-export class PluginForHtmlWebpackPluginV4 extends BasePlugin {
+export class HTMLInlineRspackPlugin extends BasePlugin {
   // Using object reference to distinguish styles for multiple files
-  private cssStyleMap: Map<HTMLWebpackPlugin, CSSStyle[]> = new Map()
+  private cssStyleMap: Map<ExtraPluginHookData['plugin'], CSSStyle[]> = new Map()
 
-  private prepareCSSStyle(data: BeforeAssetTagGenerationData) {
+  private prepareCSSStyle(data: JsBeforeAssetTagGenerationData & ExtraPluginHookData) {
     // `prepareCSSStyle` may be called more than once in webpack watch mode.
     // https://github.com/Runjuu/html-inline-css-webpack-plugin/issues/30
     // https://github.com/Runjuu/html-inline-css-webpack-plugin/issues/13
@@ -61,7 +62,7 @@ export class PluginForHtmlWebpackPluginV4 extends BasePlugin {
     })
   }
 
-  private process(data: BeforeEmitData) {
+  private process(data: JsBeforeEmitData & ExtraPluginHookData) {
     // check if current html needs to be inlined
     if (this.isCurrentFileNeedsToBeInlined(data.outputName)) {
       const cssStyles = this.cssStyleMap.get(data.plugin) || []
@@ -82,7 +83,7 @@ export class PluginForHtmlWebpackPluginV4 extends BasePlugin {
     compiler.hooks.compilation.tap(
       `${TAP_KEY_PREFIX}_compilation`,
       (compilation) => {
-        const hooks: HTMLWebpackPluginHooks = (HTMLWebpackPlugin as any).getHooks(
+        const hooks = HtmlRspackPlugin.getCompilationHooks(
           compilation,
         )
 
@@ -91,11 +92,13 @@ export class PluginForHtmlWebpackPluginV4 extends BasePlugin {
           (data) => {
             this.prepare(compilation)
             this.prepareCSSStyle(data)
+            return data
           },
         )
 
-        hooks.beforeEmit.tap(`${TAP_KEY_PREFIX}_beforeEmit`, (data) => {
-          this.process(data)
+        hooks.beforeEmit.tap(`${TAP_KEY_PREFIX}_beforeEmit`,(data) => {
+          this.process(data);
+          return data;
         })
       },
     )

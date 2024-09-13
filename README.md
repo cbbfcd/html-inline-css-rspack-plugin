@@ -1,4 +1,9 @@
-# html-inline-css-webpack-plugin
+# html-inline-css-rspack-plugin
+
+Forked the `html-inline-css-webpack-plugin` and modified it to be compatible with `rspack`
+
+---
+
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Runjuu/html-inline-css-webpack-plugin/pulls)
 [![Total downloads](https://img.shields.io/npm/dm/html-inline-css-webpack-plugin.svg)](https://www.npmjs.com/package/html-inline-css-webpack-plugin)
@@ -14,37 +19,39 @@ Require [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-ex
 ## Install
 #### NPM
 ```bash
-npm i html-inline-css-webpack-plugin -D
+npm i html-inline-css-rspack-plugin -D
 ```
 #### Yarn
 ```bash
-yarn add html-inline-css-webpack-plugin -D
+yarn add html-inline-css-rspack-plugin -D
 ```
 
 ## Minimal example
 ```js
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default;
+// const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const HTMLInlineCSSWebpackPlugin = require("html-inline-css-rspack-plugin").default;
+import { rspack } from '@rspack/core';
+import { HTMLInlineRspackPlugin } from 'html-inline-css-webpack-plugin'
 
 module.exports = {
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
-    }),
-    new HtmlWebpackPlugin(),
-    new HTMLInlineCSSWebpackPlugin(),
+    // new MiniCssExtractPlugin({
+    //   filename: "[name].css",
+    //   chunkFilename: "[id].css"
+    // }),
+    // new HtmlWebpackPlugin(),
+    new rspack.CssExtractRspackPlugin({}),
+    new rspack.HtmlRspackPlugin(options);
+    new HTMLInlineRspackPlugin(),
   ],
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader"
-        ]
-      }
+        test: /\.css$/i,
+        use: [rspack.CssExtractRspackPlugin.loader, 'css-loader'],
+        type: 'javascript/auto',
+      },
     ]
   }
 }
@@ -72,7 +79,7 @@ Return `true` to make current file internal, otherwise ignore current file. Incl
 ##### example
 ```typescript
 ...
-new HTMLInlineCSSWebpackPlugin({
+new HTMLInlineRspackPlugin({
   filter(fileName) {
     return fileName.includes('main');
   },
@@ -90,7 +97,7 @@ Used to customize the style tag.
 ##### example
 ```typescript
 ...
-  new HTMLInlineCSSWebpackPlugin({
+  new HTMLInlineRspackPlugin({
     styleTagFactory({ style }) {
       return `<style type="text/css">${style}</style>`;
     },
@@ -129,7 +136,7 @@ if `true`, it will remove the `target` from the output HTML
 
 ```typescript
 ...
-  new HTMLInlineCSSWebpackPlugin({
+  new HTMLInlineRspackPlugin({
     replace: {
       removeTarget: true,
       target: '<!-- inline_css_plugin -->',

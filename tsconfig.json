@@ -1,21 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "build/",
-    "declaration": true,
-    "target": "es5",
-    "module": "UMD",
-    "sourceMap": true,
-    "lib": ["dom", "es2015", "es2016"],
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
-    "noEmitHelpers": true,
-    "importHelpers": true,
-    "strict": true,
-    "downlevelIteration": true,
-    "noImplicitReturns": true
+    "outDir": "dist"
   },
-  "exclude": [
-    "node_modules",
-    "build"
-  ]
+  "extends": "./tsconfig.base.json",
+  "include": ["src"]
 }

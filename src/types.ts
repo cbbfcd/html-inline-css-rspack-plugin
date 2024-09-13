@@ -6,7 +6,7 @@ export interface ReplaceConfig {
 
 export type StyleTagFactory = (params: { style: string }) => string
 
-export const TAP_KEY_PREFIX = 'html-inline-css-webpack-plugin'
+export const TAP_KEY_PREFIX = 'html-inline-css-rspack-plugin'
 
 export const DEFAULT_REPLACE_CONFIG: ReplaceConfig = {
   target: '</head>',

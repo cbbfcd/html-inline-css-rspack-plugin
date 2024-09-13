@@ -1,35 +1,20 @@
 {
-  "name": "html-inline-css-webpack-plugin",
+  "name": "html-inline-css-rspack-plugin",
   "version": "1.11.2",
-  "description": "☄️ A webpack plugin for convert external stylesheet to embedded stylesheet, aka document stylesheet",
+  "description": "☄️ A rspack plugin for convert external stylesheet to embedded stylesheet, aka document stylesheet",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./build && tsc",
-    "prettier": "prettier '@(src)/**/*.@(ts)' --write",
-    "lint": "tslint -p tsconfig.json --fix"
+    "build": "rm -rf ./build && tsc --project tsconfig.json",
+    "postpublish": "npm run build",
+    "test": "ava"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Runjuu/html-inline-css-webpack-plugin.git"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts}": [
-      "prettier --write",
-      "tslint -p tsconfig.json --fix",
-      "git add"
-    ]
+    "url": "git+https://github.com/cbbfcd/html-inline-css-rspack-plugin.git"
   },
   "keywords": [
-    "webpack",
-    "webpack4",
-    "webpack5",
-    "webpack-plugin",
+    "rspack",
     "inline",
     "internal",
     "embedded",
@@ -38,31 +23,39 @@
     "style",
     "stylesheet"
   ],
-  "author": "Runjuu",
+  "author": "cbbfcd",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Runjuu/html-inline-css-webpack-plugin/issues"
+    "url": "https://github.com/cbbfcd/html-inline-css-rspack-plugin/issues"
   },
-  "homepage": "https://github.com/Runjuu/html-inline-css-webpack-plugin#readme",
+  "homepage": "https://github.com/cbbfcd/html-inline-css-rspack-plugin#readme",
   "devDependencies": {
-    "@types/lodash": "^4.14.195",
-    "@types/node": "^20.4.2",
-    "html-webpack-plugin": "^5.5.3",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
-    "tapable": "^2.2.1",
-    "tslint": "^5.20.1",
-    "tslint-eslint-rules": "^5.4.0",
-    "tslint-sonarts": "^1.8.0",
-    "typescript": "^5.1.6",
-    "webpack": "^5.88.2"
+    "@types/node": "^22.5.4",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2",
+    "@rspack/core": "^1.0.5",
+    "ava": "^6.1.3",
+    "jsdom": "^25.0.0",
+    "css-loader": "^7.1.2"
   },
   "peerDependencies": {
-    "html-webpack-plugin": "^3.0.0 || ^4.0.0 || ^5.0.0"
+    "@rspack/core": "1.x"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    }
+  },
+  "packageManager": "pnpm@9.4.0",
+  "engines": {
+    "node": ">=20.10.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "tslib": "^2.6.0"
+    "@rspack/lite-tapable": "^1.0.0"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.spec.js"
+    ]
   }
 }
