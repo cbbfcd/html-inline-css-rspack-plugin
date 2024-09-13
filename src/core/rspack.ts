@@ -5,9 +5,9 @@ import { BasePlugin } from './base-plugin'
 
 export type ExtraPluginHookData = {
   plugin: {
-      options: HtmlRspackPluginOptions;
-  };
-};
+    options: HtmlRspackPluginOptions
+  }
+}
 
 export interface JsBeforeEmitData {
   html: string
@@ -29,13 +29,9 @@ export interface JsBeforeAssetTagGenerationData {
 type CSSStyle = string
 
 export class HTMLInlineRspackPlugin extends BasePlugin {
-  // Using object reference to distinguish styles for multiple files
   private cssStyleMap: Map<ExtraPluginHookData['plugin'], CSSStyle[]> = new Map()
 
   private prepareCSSStyle(data: JsBeforeAssetTagGenerationData & ExtraPluginHookData) {
-    // `prepareCSSStyle` may be called more than once in webpack watch mode.
-    // https://github.com/Runjuu/html-inline-css-webpack-plugin/issues/30
-    // https://github.com/Runjuu/html-inline-css-webpack-plugin/issues/13
     this.cssStyleMap.clear()
 
     const [...cssAssets] = data.assets.css
@@ -53,7 +49,6 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
             this.cssStyleMap.set(data.plugin, [style])
           }
           const cssLinkIndex = data.assets.css.indexOf(cssLink)
-          // prevent generate <link /> tag
           if (cssLinkIndex !== -1) {
             data.assets.css.splice(cssLinkIndex, 1)
           }
@@ -63,7 +58,6 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
   }
 
   private process(data: JsBeforeEmitData & ExtraPluginHookData) {
-    // check if current html needs to be inlined
     if (this.isCurrentFileNeedsToBeInlined(data.outputName)) {
       const cssStyles = this.cssStyleMap.get(data.plugin) || []
 
@@ -83,9 +77,7 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
     compiler.hooks.compilation.tap(
       `${TAP_KEY_PREFIX}_compilation`,
       (compilation) => {
-        const hooks = HtmlRspackPlugin.getCompilationHooks(
-          compilation,
-        )
+        const hooks = HtmlRspackPlugin.getCompilationHooks(compilation)
 
         hooks.beforeAssetTagGeneration.tap(
           `${TAP_KEY_PREFIX}_beforeAssetTagGeneration`,
@@ -93,14 +85,17 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
             this.prepare(compilation)
             this.prepareCSSStyle(data)
             return data
-          },
+          }
         )
 
-        hooks.beforeEmit.tap(`${TAP_KEY_PREFIX}_beforeEmit`,(data) => {
-          this.process(data);
-          return data;
-        })
-      },
+        hooks.beforeEmit.tap(
+          `${TAP_KEY_PREFIX}_beforeEmit`,
+          (data) => {
+            this.process(data)
+            return data
+          }
+        )
+      }
     )
   }
 }

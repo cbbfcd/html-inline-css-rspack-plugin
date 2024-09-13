@@ -5,21 +5,21 @@ import {
   StyleTagFactory,
   DEFAULT_REPLACE_CONFIG,
   FileCache,
-} from '../types'
-import { isCSS, escapeRegExp } from '../utils'
+} from '../types';
+import { isCSS, escapeRegExp } from '../utils';
 
 export class BasePlugin {
-  protected cssStyleCache: FileCache = {}
+  protected cssStyleCache: FileCache = {};
 
   protected get replaceConfig() {
-    return this.config.replace || DEFAULT_REPLACE_CONFIG
+    return this.config.replace || DEFAULT_REPLACE_CONFIG;
   }
 
   protected get styleTagFactory(): StyleTagFactory {
     return (
       this.config.styleTagFactory ||
       (({ style }) => `<style type="text/css">${style}</style>`)
-    )
+    );
   }
 
   constructor(protected readonly config: Config = {}) {}
@@ -27,48 +27,48 @@ export class BasePlugin {
   protected prepare({ assets }: Compilation) {
     Object.keys(assets).forEach((fileName) => {
       if (isCSS(fileName) && this.isCurrentFileNeedsToBeInlined(fileName)) {
-        const source = assets[fileName].source()
-        this.cssStyleCache[fileName] = typeof source === 'string' ? source : source.toString()
+        const source = assets[fileName].source();
+        this.cssStyleCache[fileName] = typeof source === 'string' ? source : source.toString();
 
         if (!this.config.leaveCSSFile) {
-          delete assets[fileName]
+          delete assets[fileName];
         }
       }
-    })
+    });
   }
 
   protected getCSSStyle({
     cssLink,
     publicPath,
   }: {
-    cssLink: string
-    publicPath: string
+    cssLink: string;
+    publicPath: string;
   }): string | undefined {
     // Link pattern: publicPath + fileName + '?' + hash
     const fileName = cssLink
       .replace(new RegExp(`^${escapeRegExp(publicPath)}`), '')
-      .replace(/\?.+$/g, '')
+      .replace(/\?.+$/g, '');
 
     if (this.isCurrentFileNeedsToBeInlined(fileName)) {
-      const style = this.cssStyleCache[fileName]
+      const style = this.cssStyleCache[fileName];
 
       if (style === undefined) {
         console.error(
-          `Can not get css style for ${cssLink}. It may be a bug of html-inline-css-webpack-plugin.`,
-        )
+          `无法获取 ${cssLink} 的 CSS 样式。这可能是 html-inline-css-webpack-plugin 的一个 bug。`
+        );
       }
 
-      return style
+      return style;
     } else {
-      return undefined
+      return undefined;
     }
   }
 
   protected isCurrentFileNeedsToBeInlined(fileName: string): boolean {
     if (typeof this.config.filter === 'function') {
-      return this.config.filter(fileName)
+      return this.config.filter(fileName);
     } else {
-      return true
+      return true;
     }
   }
 
@@ -77,31 +77,31 @@ export class BasePlugin {
     htmlFileName,
     style,
   }: {
-    html: string
-    htmlFileName: string
-    style: string
+    html: string;
+    htmlFileName: string;
+    style: string;
   }) {
     const replaceValues = [
       this.styleTagFactory({ style }),
       this.replaceConfig.target,
-    ]
+    ];
 
     if (this.replaceConfig.position === 'after') {
-      replaceValues.reverse()
+      replaceValues.reverse();
     }
 
     if (html.indexOf(this.replaceConfig.target) === -1) {
       throw new Error(
-        `Can not inject css style into "${htmlFileName}", as there is not replace target "${this.replaceConfig.target}"`,
-      )
+        `无法将 CSS 样式注入到 "${htmlFileName}"，因为找不到替换目标 "${this.replaceConfig.target}"`
+      );
     }
 
-    return html.replace(this.replaceConfig.target, replaceValues.join(''))
+    return html.replace(this.replaceConfig.target, replaceValues.join(''));
   }
 
   protected cleanUp(html: string) {
     return this.replaceConfig.removeTarget
       ? html.replace(this.replaceConfig.target, '')
-      : html
+      : html;
   }
 }

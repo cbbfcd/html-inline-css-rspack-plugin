@@ -1,5 +1,6 @@
 const test = require('ava');
 const fs = require('fs');
+const path = require('path');
 const { rspack } = require('@rspack/core');
 const { JSDOM } = require('jsdom');
 
@@ -9,8 +10,10 @@ function buildRspackConfig(entry = './test/src/index.js') {
   return {
     entry,
     output: {
-      filename: 'bundle.js',
-      path: __dirname + '/test/dist'
+      path: path.resolve(__dirname, 'dist'),
+    },
+    experiments: {
+      css: false,
     },
     module: {
       rules: [
@@ -21,10 +24,14 @@ function buildRspackConfig(entry = './test/src/index.js') {
         }
       ]
     },
+    optimization: {
+      minimize: false,
+    },
     plugins: [
       new rspack.HtmlRspackPlugin({
         template: './test/src/index.html'
       }),
+      new rspack.CssExtractRspackPlugin(),
       new HTMLInlineRspackPlugin()
     ]
   }
@@ -47,7 +54,7 @@ test.before(async t => {
 });
 
 test('CSS should be inlined into HTML', t => {
-  const htmlContent = fs.readFileSync(__dirname + '/test/dist/index.html', 'utf-8');
+  const htmlContent = fs.readFileSync(__dirname + '/dist/index.html', 'utf-8');
   const dom = new JSDOM(htmlContent);
   const styleTags = dom.window.document.querySelectorAll('style');
 
