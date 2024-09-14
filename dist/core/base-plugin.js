@@ -33,7 +33,7 @@ class BasePlugin {
         if (this.isCurrentFileNeedsToBeInlined(fileName)) {
             const style = this.cssStyleCache[fileName];
             if (style === undefined) {
-                console.error(`Can not get css style for ${cssLink}. It may be a bug of html-inline-css-webpack-plugin.`);
+                console.error(`无法获取 ${cssLink} 的 CSS 样式。这可能是 html-inline-css-webpack-plugin 的一个 bug。`);
             }
             return style;
         }
@@ -58,7 +58,7 @@ class BasePlugin {
             replaceValues.reverse();
         }
         if (html.indexOf(this.replaceConfig.target) === -1) {
-            throw new Error(`Can not inject css style into "${htmlFileName}", as there is not replace target "${this.replaceConfig.target}"`);
+            throw new Error(`无法将 CSS 样式注入到 "${htmlFileName}"，因为找不到替换目标 "${this.replaceConfig.target}"`);
         }
         return html.replace(this.replaceConfig.target, replaceValues.join(''));
     }

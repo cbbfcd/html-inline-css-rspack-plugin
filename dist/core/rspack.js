@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HTMLInlineRspackPlugin = void 0;
 const core_1 = require("@rspack/core");
-const types_1 = require("../types");
 const base_plugin_1 = require("./base-plugin");
+const types_1 = require("../types");
 class HTMLInlineRspackPlugin extends base_plugin_1.BasePlugin {
     constructor() {
         super(...arguments);
@@ -19,11 +19,11 @@ class HTMLInlineRspackPlugin extends base_plugin_1.BasePlugin {
                     publicPath: data.assets.publicPath,
                 });
                 if (style) {
-                    if (this.cssStyleMap.has(data.plugin)) {
-                        this.cssStyleMap.get(data.plugin).push(style);
+                    if (this.cssStyleMap.has(this)) {
+                        this.cssStyleMap.get(this).push(style);
                     }
                     else {
-                        this.cssStyleMap.set(data.plugin, [style]);
+                        this.cssStyleMap.set(this, [style]);
                     }
                     const cssLinkIndex = data.assets.css.indexOf(cssLink);
                     if (cssLinkIndex !== -1) {
@@ -35,7 +35,7 @@ class HTMLInlineRspackPlugin extends base_plugin_1.BasePlugin {
     }
     process(data) {
         if (this.isCurrentFileNeedsToBeInlined(data.outputName)) {
-            const cssStyles = this.cssStyleMap.get(data.plugin) || [];
+            const cssStyles = this.cssStyleMap.get(this) || [];
             cssStyles.forEach((style) => {
                 data.html = this.addStyle({
                     style,

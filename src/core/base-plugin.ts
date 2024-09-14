@@ -24,14 +24,14 @@ export class BasePlugin {
 
   constructor(protected readonly config: Config = {}) {}
 
-  protected prepare({ assets }: Compilation) {
+  protected prepare({ assets, deleteAsset }: Compilation) {
     Object.keys(assets).forEach((fileName) => {
       if (isCSS(fileName) && this.isCurrentFileNeedsToBeInlined(fileName)) {
         const source = assets[fileName].source();
         this.cssStyleCache[fileName] = typeof source === 'string' ? source : source.toString();
 
         if (!this.config.leaveCSSFile) {
-          delete assets[fileName];
+          deleteAsset(fileName);
         }
       }
     });

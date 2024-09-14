@@ -1,3 +1,5 @@
+import { type HtmlRspackPluginOptions } from "@rspack/core";
+
 export interface ReplaceConfig {
   position?: 'before' | 'after';
   removeTarget?: boolean;
@@ -22,3 +24,28 @@ export interface Config {
 export interface FileCache {
   [fileName: string]: string; // 文件内容
 }
+
+export type ExtraPluginHookData = {
+  plugin: {
+    options: HtmlRspackPluginOptions
+  }
+}
+
+export interface JsBeforeEmitData {
+  html: string
+  outputName: string
+}
+
+export interface JsHtmlPluginAssets {
+  publicPath: string
+  js: Array<string>
+  css: Array<string>
+  favicon?: string
+}
+
+export interface JsBeforeAssetTagGenerationData {
+  assets: JsHtmlPluginAssets
+  outputName: string
+}
+
+export type CSSStyle = string

@@ -1,35 +1,10 @@
-import { HtmlRspackPlugin, type HtmlRspackPluginOptions, type Compiler } from '@rspack/core'
+import { HtmlRspackPlugin, type Compiler } from '@rspack/core'
 
-import { TAP_KEY_PREFIX } from '../types'
 import { BasePlugin } from './base-plugin'
-
-export type ExtraPluginHookData = {
-  plugin: {
-    options: HtmlRspackPluginOptions
-  }
-}
-
-export interface JsBeforeEmitData {
-  html: string
-  outputName: string
-}
-
-export interface JsHtmlPluginAssets {
-  publicPath: string
-  js: Array<string>
-  css: Array<string>
-  favicon?: string
-}
-
-export interface JsBeforeAssetTagGenerationData {
-  assets: JsHtmlPluginAssets
-  outputName: string
-}
-
-type CSSStyle = string
+import { CSSStyle, ExtraPluginHookData, JsBeforeAssetTagGenerationData, JsBeforeEmitData, TAP_KEY_PREFIX } from '../types'
 
 export class HTMLInlineRspackPlugin extends BasePlugin {
-  private cssStyleMap: Map<ExtraPluginHookData['plugin'], CSSStyle[]> = new Map()
+  private cssStyleMap: Map<HTMLInlineRspackPlugin, CSSStyle[]> = new Map()
 
   private prepareCSSStyle(data: JsBeforeAssetTagGenerationData & ExtraPluginHookData) {
     this.cssStyleMap.clear()
@@ -43,10 +18,10 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
         })
 
         if (style) {
-          if (this.cssStyleMap.has(data.plugin)) {
-            this.cssStyleMap.get(data.plugin)!.push(style)
+          if (this.cssStyleMap.has(this)) {
+            this.cssStyleMap.get(this)!.push(style)
           } else {
-            this.cssStyleMap.set(data.plugin, [style])
+            this.cssStyleMap.set(this, [style])
           }
           const cssLinkIndex = data.assets.css.indexOf(cssLink)
           if (cssLinkIndex !== -1) {
@@ -59,7 +34,7 @@ export class HTMLInlineRspackPlugin extends BasePlugin {
 
   private process(data: JsBeforeEmitData & ExtraPluginHookData) {
     if (this.isCurrentFileNeedsToBeInlined(data.outputName)) {
-      const cssStyles = this.cssStyleMap.get(data.plugin) || []
+      const cssStyles = this.cssStyleMap.get(this) || []
 
       cssStyles.forEach((style) => {
         data.html = this.addStyle({
