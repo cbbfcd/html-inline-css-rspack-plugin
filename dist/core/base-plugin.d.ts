@@ -6,7 +6,7 @@ export declare class BasePlugin {
     protected get replaceConfig(): import("../types").ReplaceConfig;
     protected get styleTagFactory(): StyleTagFactory;
     constructor(config?: Config);
-    protected prepare({ assets }: Compilation): void;
+    protected prepare(compilation: Compilation): void;
     protected getCSSStyle({ cssLink, publicPath, }: {
         cssLink: string;
         publicPath: string;

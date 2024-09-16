@@ -24,14 +24,15 @@ export class BasePlugin {
 
   constructor(protected readonly config: Config = {}) {}
 
-  protected prepare({ assets, deleteAsset }: Compilation) {
-    Object.keys(assets).forEach((fileName) => {
+  protected prepare(compilation: Compilation) {
+    Object.keys(compilation.assets).forEach((fileName) => {
       if (isCSS(fileName) && this.isCurrentFileNeedsToBeInlined(fileName)) {
-        const source = assets[fileName].source();
+        const source = compilation.assets[fileName].source();
         this.cssStyleCache[fileName] = typeof source === 'string' ? source : source.toString();
 
         if (!this.config.leaveCSSFile) {
-          deleteAsset(fileName);
+          // https://rspack.dev/zh/api/javascript-api/compilation#deleteasset
+          compilation.deleteAsset(fileName);
         }
       }
     });

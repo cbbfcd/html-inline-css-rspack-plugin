@@ -1,11 +1,11 @@
 {
   "name": "html-inline-css-rspack-plugin",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "description": "☄️ A rspack plugin for convert external stylesheet to embedded stylesheet, aka document stylesheet",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./build && tsc --project tsconfig.json",
+    "build": "rm -rf ./dist && tsc --project tsconfig.json",
     "postpublish": "npm run build",
     "test": "ava"
   },

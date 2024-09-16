@@ -15,13 +15,13 @@ class BasePlugin {
         this.config = config;
         this.cssStyleCache = {};
     }
-    prepare({ assets }) {
-        Object.keys(assets).forEach((fileName) => {
+    prepare(compilation) {
+        Object.keys(compilation.assets).forEach((fileName) => {
             if ((0, utils_1.isCSS)(fileName) && this.isCurrentFileNeedsToBeInlined(fileName)) {
-                const source = assets[fileName].source();
+                const source = compilation.assets[fileName].source();
                 this.cssStyleCache[fileName] = typeof source === 'string' ? source : source.toString();
                 if (!this.config.leaveCSSFile) {
-                    delete assets[fileName];
+                    compilation.deleteAsset(fileName);
                 }
             }
         });

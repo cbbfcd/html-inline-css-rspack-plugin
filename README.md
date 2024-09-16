@@ -14,7 +14,7 @@ Convert external stylesheet to embedded stylesheet, aka document stylesheet.
 <link rel="stylesheet" /> => <style>...<style/>
 ```
 
-Require [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin) and [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin)
+Require `rspack.CssExtractRspackPlugin` and `rspack.HtmlRspackPlugin`
 
 ## Install
 #### NPM
@@ -32,7 +32,7 @@ yarn add html-inline-css-rspack-plugin -D
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const HTMLInlineCSSWebpackPlugin = require("html-inline-css-rspack-plugin").default;
 import { rspack } from '@rspack/core';
-import { HTMLInlineRspackPlugin } from 'html-inline-css-webpack-plugin'
+import { HTMLInlineRspackPlugin } from 'html-inline-css-rspack-plugin'
 
 module.exports = {
   plugins: [
@@ -56,6 +56,10 @@ module.exports = {
   }
 }
 ```
+
+----
+
+> Keep the original config as `html-inline-css-webpack-plugin`.
 
 ## Config
 ```typescript
